@@ -823,6 +823,10 @@ id-ce 54		: inhibitAnyPolicy	: X509v3 Inhibit Any Policy
 id-ce 55		: targetInformation	: X509v3 AC Targeting
 !Cname no-rev-avail
 id-ce 56		: noRevAvail		: X509v3 No Revocation Available
+!Cname hybrid-key
+id-ce 211       : hybridKey         : X509v3 Hybrid Key
+!Cname hybrid-sig
+id-ce 212       : hybridSig         : X509v3 Hybrid Signature
 
 # From RFC5280
 ext-key-usage 0		: anyExtendedKeyUsage	: Any Extended Key Usage

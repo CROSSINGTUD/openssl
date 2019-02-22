@@ -183,6 +183,7 @@ struct x509_st {
     X509_CERT_AUX *aux;
     CRYPTO_RWLOCK *lock;
     volatile int ex_cached;
+    EVP_PKEY* hybrid_sig_private_key;
 } /* X509 */ ;
 
 /*

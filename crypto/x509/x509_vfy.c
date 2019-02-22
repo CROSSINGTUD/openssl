@@ -243,6 +243,10 @@ static int verify_chain(X509_STORE_CTX *ctx)
     if ((ok = X509v3_addr_validate_path(ctx)) == 0)
         return ok;
 #endif
+    
+    // Verify hybrid signatures
+    if ((ok = X509v3_hybrid_sig_validate_path(ctx)) == 0)
+        return ok;
 
     /* If we get this far evaluate policies */
     if (ctx->param->flags & X509_V_FLAG_POLICY_CHECK)

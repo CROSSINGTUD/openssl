@@ -18,6 +18,7 @@
 #include <openssl/rsa.h>
 #include <openssl/dsa.h>
 #include <openssl/x509v3.h>
+#include <crypto/evp/evp_locl.h>
 
 int X509_verify(X509 *a, EVP_PKEY *r)
 {
@@ -50,6 +51,14 @@ int X509_sign(X509 *x, EVP_PKEY *pkey, const EVP_MD *md)
 int X509_sign_ctx(X509 *x, EVP_MD_CTX *ctx)
 {
     x->cert_info.enc.modified = 1;
+    //FIXME: currently signing twice to fill in algorithm identifiers before performing the hybrid signature.
+    EVP_MD_CTX* ctxCpy = EVP_MD_CTX_create();
+    EVP_MD_CTX_copy(ctxCpy, ctx);
+    ctxCpy->pctx = ctx->pctx;
+    ASN1_item_sign_ctx(ASN1_ITEM_rptr(X509_CINF),
+                              &x->cert_info.signature,
+                              &x->sig_alg, &x->signature, &x->cert_info, ctxCpy);
+    HYBRID_SIGNATURE_sign(x);
     return ASN1_item_sign_ctx(ASN1_ITEM_rptr(X509_CINF),
                               &x->cert_info.signature,
                               &x->sig_alg, &x->signature, &x->cert_info, ctx);

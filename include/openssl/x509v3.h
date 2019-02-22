@@ -929,6 +929,13 @@ const ASN1_PRINTABLESTRING *PROFESSION_INFO_get0_registrationNumber(
 void PROFESSION_INFO_set0_registrationNumber(
     PROFESSION_INFO *pi, ASN1_PRINTABLESTRING *rn);
 
+// Hybrid Key
+EVP_PKEY* X509_get_hybrid_key(X509* x);
+
+// Hybrid Signature
+void HYBRID_SIGNATURE_sign(X509* x);
+int X509v3_hybrid_sig_validate_path(X509_STORE_CTX *ctx);
+
 # ifdef  __cplusplus
 }
 # endif

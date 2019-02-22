@@ -174,6 +174,9 @@ const char *X509_verify_cert_error_string(long n)
         return "OCSP verification failed";
     case X509_V_ERR_OCSP_CERT_UNKNOWN:
         return "OCSP unknown cert";
+    case X509_V_ERR_HYBRID_SIG_VERIFY_FAIL:
+        return "Hybrid signature verification failed";
+
 
     default:
         /* Printing an error number into a static buffer is not thread-safe */
