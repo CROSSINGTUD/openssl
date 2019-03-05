@@ -170,7 +170,7 @@ static int HYBRID_SIGNATURE_verify(X509* x, EVP_PKEY* public_key) {
     }
     signature = ASN1_STRING_dup(hs->sig);
 
-    //create a dummy extension for verification (contains all 0's as the signature string.
+    //create a dummy extension for verification (contains all 0's as the signature string)
     if ((dummy = create_dummy_extension(public_key, hs->algor)) == NULL) {
 		// Error set by createDummyExtension, so we do not need to set any.
     	return 0;
@@ -213,6 +213,7 @@ static int hybrid_sig_validate_path_internal(X509_STORE_CTX *ctx,
 	EVP_PKEY* public_key;
 	int i;
 	X509 *x;
+    bool need_pubkey = false; // if one certificate has a hybrid key, all others upwards in the chain need one as well
 
 	i = 0;
 	x = sk_X509_value(chain, i);
@@ -224,9 +225,19 @@ static int hybrid_sig_validate_path_internal(X509_STORE_CTX *ctx,
 		X509* parent = sk_X509_value(chain, i + 1);
 		public_key = X509_get_hybrid_key(parent);
 		if (!public_key) {
-			printf("No hybrid pubkey\n");
+			if (need_pubkey) {
+				ctx->error = X509_V_ERR_HYBRID_SIG_VERIFY_FAIL;
+				ctx->error_depth = i;
+				ctx->current_cert = x;
+				if (ctx->verify_cb(0, ctx) == 0)
+					return 0;
+			}
+			// we do not have a hybrid key, but we do not need one. Continue checking the chain
 			continue;
-			//return 0;//TODO: how to handle
+		}
+		else {
+			// this certificate has a hybridkey -> all parent certificates need to have one as well
+			need_pubkey = true;
 		}
 		if (HYBRID_SIGNATURE_verify(x, public_key) == 0) {
 			ctx->error = X509_V_ERR_HYBRID_SIG_VERIFY_FAIL;
@@ -240,6 +251,16 @@ static int hybrid_sig_validate_path_internal(X509_STORE_CTX *ctx,
 
 	// Check self signed hybrid signature of the root certificate.
 	public_key = X509_get_hybrid_key(x);
+	if (!public_key) {
+		if (need_pubkey) {
+			ctx->error = X509_V_ERR_HYBRID_SIG_VERIFY_FAIL;
+			ctx->error_depth = i;
+			ctx->current_cert = x;
+			if (ctx->verify_cb(0, ctx) == 0)
+				return 0;
+		}
+		return 1; // we do not need a hybrid key -> all is good :)
+	}
 	return HYBRID_SIGNATURE_verify(x, public_key);
 }
 
