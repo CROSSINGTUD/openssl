@@ -48,23 +48,6 @@ The following hybrid schemes are supported, using either the NIST P-256 curve or
 - `p256_qteslaI`, `rsa3072_qteslaI`, `p384_qteslaIIIsize`, `p384_qteslaIIIspeed` (not currently on Windows)
 
 
-Limitations and security
-------------------------
-
-liboqs and this integration into OpenSSL are designed for prototyping and evaluating quantum-resistant cryptography.  Security of proposed quantum-resistant algorithms may rapidly change as research advances, and may ultimately be completely insecure against either classical or quantum computers.
-
-We believe that the NIST Post-Quantum Cryptography standardization project is currently the best avenue to identifying potentially quantum-resistant algorithms.  liboqs does not intend to "pick winners", and we strongly recommend that applications and protocols rely on the outcomes of the NIST standardization project when deploying post-quantum cryptography.
-
-We acknowledge that some parties may want to begin deploying post-quantum cryptography prior to the conclusion of the NIST standardization project.  We strongly recommend that any attempts to do make use of so-called **hybrid cryptography**, in which post-quantum public-key algorithms are used alongside traditional public key algorithms (like RSA or elliptic curves) so that the solution is at least no less secure than existing traditional cryptography.
-
-liboqs and our integration into OpenSSL is provided "as is", without warranty of any kind.  See [LICENSE.txt](https://github.com/CROSSINGTUD/openssl/LICENSE) for the full disclaimer.
-
-The integration of liboqs into our fork of OpenSSL is currently at an experimental stage, and has not received significant review.  At this stage, we do not recommend relying on it in any production environment or to protect any sensitive data.
-
-The OQS fork of OpenSSL is not endorsed by the OpenSSL project.
-
-Proofs of TLS such as [[JKSS12]](https://eprint.iacr.org/2011/219) and [[KPW13]](https://eprint.iacr.org/2013/339) require a key exchange mechanism that has a form of active security, either in the form of the PRF-ODH assumption, or an IND-CCA KEM.  Some of the KEMs provided in liboqs do provide IND-CCA security; others do not, in which case existing proofs of security of TLS against active attackers do not apply.
-
 Building on Linux 
 ---------------------------
 
@@ -149,7 +132,7 @@ Before creating the certificates the config files have to be adapted depending o
 First you have to set the dir variable, which determines where the certificates, csr etc are kept. 
 In the root config file set dir = /path-to-root_ca/root_ca
 In the intermediate config file set dir = /path-to-root_ca/root_ca/intermediate
-Then you have to set de hybridSig extension. It sets the path to the private key, which is used to create the post-quantum signature.
+Then you have to set the hybridSig extension. It sets the path to the private key, which is used to create the post-quantum safe signature.
 For the root config set hybridSig=file:path-to-root_ca/root_ca/private/ca.qteslakey.pem in the extension sections.
 For the intermediate config set hybridSig=file:path-to-root_ca/root_ca/intermediate/private/ca.qteslakey.pem in the extension sections.
 The extension sections can be adapted as in standard openssl according to your needs. For the TLS demo extendedKeyUsage = serverAuth is needed for the server.
@@ -177,47 +160,47 @@ The extension sections can be adapted as in standard openssl according to your n
     
 2. Create the post-quantum safe keypair:
 
-    <path-to-openssl-dir>/apps/openssl req -x509 -new -newkey qteslaI -pubkey -keyout intermediate/private/intermediate.qteslakey.pem -out intermediate/public/intermediate.qteslakey.pem -nodes -config intermediate/openssl.cnf -noout
+    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey qteslaI -pubkey -keyout intermediate/private/intermediate.qteslakey.pem -out intermediate/public/intermediate.qteslakey.pem -nodes -config intermediate/openssl.cnf -noout`
     
 3. Creating the CSR for the intermediate CA:
 When creating the CSR we have to specify the path to the post-quantum public key, which will be included as extension.
 
-    <path-to-openssl-dir>/apps/openssl req -config intermediate/openssl.cnf -new -key intermediate/private/intermediate.rsakey.pem -out intermediate/csr/intermediate.csr.pem -addext "hybridKey=file:path-to-root_ca/root_ca/intermediate/public/intermediate.qteslakey.pem"
+    `<path-to-openssl-dir>/apps/openssl req -config intermediate/openssl.cnf -new -key intermediate/private/intermediate.rsakey.pem -out intermediate/csr/intermediate.csr.pem -addext "hybridKey=file:path-to-root_ca/root_ca/intermediate/public/intermediate.qteslakey.pem"`
 
 4. Create the certificate for the intermediate CA as root CA:
 
-    <path-to-openssl-dir>/apps/openssl ca -config openssl.cnf -extensions v3_intermediate_ca -in intermediate/csr/intermediate.csr.pem -out intermediate/certs/intermediate.cert.pem
+    `<path-to-openssl-dir>/apps/openssl ca -config openssl.cnf -extensions v3_intermediate_ca -in intermediate/csr/intermediate.csr.pem -out intermediate/certs/intermediate.cert.pem`
     
 5. Verify the intermediate CA certificate:
 
-    <path-to-openssl-dir>/apps/openssl verify -CAfile certs/ca.cert.pem intermediate/certs/intermediate.cert.pem
+    `<path-to-openssl-dir>/apps/openssl verify -CAfile certs/ca.cert.pem intermediate/certs/intermediate.cert.pem`
     
 ### Create the chain file
 
-    cat intermediate/certs/intermediate.cert.pem certs/ca.cert.pem > intermediate/certs/ca-chain.cert.pem
+    `cat intermediate/certs/intermediate.cert.pem certs/ca.cert.pem > intermediate/certs/ca-chain.cert.pem`
     
 ### Create and verify the server certificate
 
 1. Create the non-post-quantum safe keypair:
 
-    <path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout intermediate/private/www.example.com.rsakey.pem -out intermediate/public/www.example.com.rsakey.pem -nodes -config intermediate/openssl.cnf -noout
+    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout intermediate/private/www.example.com.rsakey.pem -out intermediate/public/www.example.com.rsakey.pem -nodes -config intermediate/openssl.cnf -noout`
     
 2. Create the post-quantum safe keypair:
 
-    <path-to-openssl-dir>/apps/openssl req -x509 -new -newkey qteslaI -pubkey -keyout intermediate/private/www.example.com.qteslakey.pem -out intermediate/public/www.example.com.qteslakey.pem -nodes -config intermediate/openssl.cnf -noout
+    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey qteslaI -pubkey -keyout intermediate/private/www.example.com.qteslakey.pem -out intermediate/public/www.example.com.qteslakey.pem -nodes -config intermediate/openssl.cnf -noout`
     
 3. Creating the CSR for the server certificate:
 When creating the CSR we have to specify the path to the post-quantum public key, which will be included as extension.
 
-    <path-to-openssl-dir>/apps/openssl req -config intermediate/openssl.cnf -new -key intermediate/private/www.example.com.rsakey.pem -out intermediate/csr/www.example.com.csr.pem -addext "hybridKey=file:/home/tobias/crossing/configs/intermediate/public/www.example.com.qteslakey.pem"
+    `<path-to-openssl-dir>/apps/openssl req -config intermediate/openssl.cnf -new -key intermediate/private/www.example.com.rsakey.pem -out intermediate/csr/www.example.com.csr.pem -addext "hybridKey=file:/home/tobias/crossing/configs/intermediate/public/www.example.com.qteslakey.pem"`
 
 4. Create the certificate for the server as intermediate CA:
 
-    <path-to-openssl-dir>/apps/openssl ca -config intermediate/openssl.cnf -extensions usr_cert -in intermediate/csr/www.example.com.csr.pem -out intermediate/certs/www.example.com.cert.pem
+    `<path-to-openssl-dir>/apps/openssl ca -config intermediate/openssl.cnf -extensions usr_cert -in intermediate/csr/www.example.com.csr.pem -out intermediate/certs/www.example.com.cert.pem`
     
 5. Verify the server certificate:
 
-    <path-to-openssl-dir>/apps/openssl verify -CAfile certs/ca.cert.pem -untrusted intermediate/certs/intermediate.cert.pem intermediate/certs/www.example.com.cert.pem
+    `<path-to-openssl-dir>/apps/openssl verify -CAfile certs/ca.cert.pem -untrusted intermediate/certs/intermediate.cert.pem intermediate/certs/www.example.com.cert.pem`
     
 
 ### TLS demo
