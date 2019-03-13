@@ -219,7 +219,7 @@ In another terminal window, you can run a TLS client requesting one of the suppo
 License
 -------
 
-All modifications in the CROSSINGTUD/openssl repository are released under the same terms as OpenSSL, namely as described in the file [LICENSE](https://github.com/CROSSINGTUD/openssl/LICENSE).
+All modifications in the CROSSINGTUD/openssl repository are released under the same terms as OpenSSL and the OQS-OpenSSL\_1\_1\_1-stable branch of the **Open Quantum Safe (OQS) project** namely as described in the file [LICENSE](https://github.com/CROSSINGTUD/openssl/LICENSE).
 
 
 ### Contributors
