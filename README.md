@@ -1,7 +1,7 @@
 Fork of OQS-OpenSSL\_1\_1\_1-stable
 ==========================
 
-**OpenSSL** ([https://openssl.org/](https://openssl.org/)) is an open-source TLS/SSL and crypto library.  (View the original [README file](https://github.com/CROSSINGTUD/openssl/README) for OpenSSL.)
+**OpenSSL** ([https://openssl.org/](https://openssl.org/)) is an open-source TLS/SSL and crypto library.  (View the original [README file](https://github.com/CROSSINGTUD/openssl/blob/OQS-OpenSSL_1_1_1-stable/README) for OpenSSL.)
 
 This branch is a fork of the OQS-OpenSSL\_1\_1\_1-stable branch of the **Open Quantum Safe (OQS) project** which adds the following:
 
@@ -219,7 +219,7 @@ In another terminal window, you can run a TLS client requesting one of the suppo
 License
 -------
 
-All modifications in the CROSSINGTUD/openssl repository are released under the same terms as OpenSSL and the OQS-OpenSSL\_1\_1\_1-stable branch of the **Open Quantum Safe (OQS) project** namely as described in the file [LICENSE](https://github.com/CROSSINGTUD/openssl/LICENSE).
+All modifications in the CROSSINGTUD/openssl repository are released under the same terms as OpenSSL and the OQS-OpenSSL\_1\_1\_1-stable branch of the **Open Quantum Safe (OQS) project** namely as described in the file [LICENSE](https://github.com/CROSSINGTUD/openssl//blob/OQS-OpenSSL_1_1_1-stable/LICENSE).
 
 
 ### Contributors
