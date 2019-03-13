@@ -156,7 +156,7 @@ The extension sections can be adapted as in standard openssl according to your n
 
 1. Create the non-post-quantum safe keypair:
 
-    <path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout intermediate/private/intermediate.rsakey.pem -out intermediate/public/intermediate.rsakey.pem -nodes -config intermediate/openssl.cnf -noout
+    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout intermediate/private/intermediate.rsakey.pem -out intermediate/public/intermediate.rsakey.pem -nodes -config intermediate/openssl.cnf -noout`
     
 2. Create the post-quantum safe keypair:
 
