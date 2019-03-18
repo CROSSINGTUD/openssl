@@ -97,7 +97,7 @@ The OQS fork of OpenSSL can also be built with shared libraries, but we have use
 
 See the [liboqs documentation](https://github.com/open-quantum-safe/liboqs/) for information on test programs in liboqs.
 
-Creating a certificate chain
+Creating a hybrid certificate chain
 ---------------------------
 
 In practice certificate chains are used e.g. to authenticate a server or client. In the following a certificate chain of three hybrid certificates is created to show how to use the implementation.
@@ -150,7 +150,7 @@ The extension sections can be adapted as in standard openssl according to your n
     
 3. Create the self-signed root certificate:
 
-    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout private/ca.rsakey.pem -out public/ca.rsakey.pem -nodes -config openssl.cnf -noout`
+    `<path-to-openssl-dir>/apps/openssl req -x509 -new -out certs/ca.cert.pem -key private/ca.rsakey.pem -nodes -addext "hybridSig=file:path-to-root_ca/private/ca.qteslakey.pem" -addext "hybridKey=file:path-to-root_ca/public/ca.qteslakey.pem" -extensions v3_ca -config openssl.cnf `
 
 ### Create and verify the intermediate CA certificate
 
