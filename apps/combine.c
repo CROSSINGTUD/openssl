@@ -1,3 +1,7 @@
+/*
+ * Application that can be used to combine two keys into one hybrid key
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
