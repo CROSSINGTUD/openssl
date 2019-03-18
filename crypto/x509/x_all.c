@@ -58,7 +58,10 @@ int X509_sign_ctx(X509 *x, EVP_MD_CTX *ctx)
     ASN1_item_sign_ctx(ASN1_ITEM_rptr(X509_CINF),
                               &x->cert_info.signature,
                               &x->sig_alg, &x->signature, &x->cert_info, ctxCpy);
+
+    // create the inner signature, if it is required
     HYBRID_SIGNATURE_sign(x);
+
     return ASN1_item_sign_ctx(ASN1_ITEM_rptr(X509_CINF),
                               &x->cert_info.signature,
                               &x->sig_alg, &x->signature, &x->cert_info, ctx);

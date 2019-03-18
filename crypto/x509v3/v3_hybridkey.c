@@ -91,6 +91,7 @@ const X509V3_EXT_METHOD v3_hybrid_key = {
     NULL                    /* extension-specific data */
 };
 
+// if the certificate contains an inner public key it is returned, otherwise a null pointer is returned
 EVP_PKEY* X509_get_hybrid_key(X509* x) {
     int i;
 	X509_EXTENSION* ext;

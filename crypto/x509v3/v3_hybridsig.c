@@ -277,6 +277,9 @@ int X509v3_hybrid_sig_validate_path(X509_STORE_CTX *ctx) {
     return hybrid_sig_validate_path_internal(ctx, ctx->chain);
 }
 
+/* Generates an hybridSig extension that contains all 0's as the signature string.
+ * This form is used for signing and verifying.
+ */
 HybridSig* create_dummy_extension(EVP_PKEY* key, X509_ALGOR* alg) {
 	HybridSig* hs;
 	int signatureLength;
