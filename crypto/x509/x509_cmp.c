@@ -14,7 +14,7 @@
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 #include "internal/x509_int.h"
-
+int oqs_combine_keys(const EVP_PKEY *classical_key, const EVP_PKEY *oqs_keyp, EVP_PKEY *result);
 int X509_issuer_and_serial_cmp(const X509 *a, const X509 *b)
 {
     int i;
@@ -259,6 +259,21 @@ X509 *X509_find_by_subject(STACK_OF(X509) *sk, X509_NAME *name)
             return x509;
     }
     return NULL;
+}
+
+// Tries to retrieve a hybrid public key.
+// If the certificate does not contain the hybrid key extension, it just returns the normal public key.
+EVP_PKEY *X509_extract_pubkey(const X509 *x)
+{
+    EVP_PKEY *classical_pkey = X509_get0_pubkey(x);
+    EVP_PKEY *oqs_pkey = X509_get_hybrid_key(x);
+    if(!oqs_pkey){
+        return classical_pkey;
+    }
+    //return get_combined_key
+    EVP_PKEY *tmp = EVP_PKEY_new();
+    oqs_combine_keys(classical_pkey,oqs_pkey,tmp);
+    return tmp;
 }
 
 EVP_PKEY *X509_get0_pubkey(const X509 *x)
