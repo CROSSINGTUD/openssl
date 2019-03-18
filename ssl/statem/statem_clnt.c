@@ -1944,8 +1944,7 @@ MSG_PROCESS_RETURN tls_process_server_certificate(SSL *s, PACKET *pkt)
      */
     x = sk_X509_value(sk, 0);
     sk = NULL;
-
-    pkey = X509_get0_pubkey(x);
+    pkey = X509_extract_pubkey(x);
 
     if (pkey == NULL || EVP_PKEY_missing_parameters(pkey)) {
         x = NULL;
@@ -2083,7 +2082,7 @@ static int tls_process_ske_srp(SSL *s, PACKET *pkt, EVP_PKEY **pkey)
 
     /* We must check if there is a certificate */
     if (s->s3->tmp.new_cipher->algorithm_auth & (SSL_aRSA | SSL_aDSS))
-        *pkey = X509_get0_pubkey(s->session->peer);
+        *pkey = X509_extract_pubkey(s->session->peer);
 
     return 1;
 #else
@@ -2179,7 +2178,7 @@ static int tls_process_ske_dhe(SSL *s, PACKET *pkt, EVP_PKEY **pkey)
      * public keys. We should have a less ad-hoc way of doing this
      */
     if (s->s3->tmp.new_cipher->algorithm_auth & (SSL_aRSA | SSL_aDSS))
-        *pkey = X509_get0_pubkey(s->session->peer);
+        *pkey = X509_extract_pubkey(s->session->peer);
     /* else anonymous DH, so no certificate or pkey. */
 
     return 1;
@@ -2252,9 +2251,9 @@ static int tls_process_ske_ecdhe(SSL *s, PACKET *pkt, EVP_PKEY **pkey)
      * and ECDSA.
      */
     if (s->s3->tmp.new_cipher->algorithm_auth & SSL_aECDSA)
-        *pkey = X509_get0_pubkey(s->session->peer);
+        *pkey = X509_extract_pubkey(s->session->peer);
     else if (s->s3->tmp.new_cipher->algorithm_auth & SSL_aRSA)
-        *pkey = X509_get0_pubkey(s->session->peer);
+        *pkey = X509_extract_pubkey(s->session->peer);
     /* else anonymous ECDH, so no certificate or pkey. */
 
     return 1;
@@ -3204,7 +3203,7 @@ static int tls_construct_cke_gost(SSL *s, WPACKET *pkt)
         return 0;
     }
 
-    pkey_ctx = EVP_PKEY_CTX_new(X509_get0_pubkey(peer_cert), NULL);
+    pkey_ctx = EVP_PKEY_CTX_new(X509_extract_pubkey(peer_cert), NULL);
     if (pkey_ctx == NULL) {
         SSLfatal(s, SSL_AD_INTERNAL_ERROR, SSL_F_TLS_CONSTRUCT_CKE_GOST,
                  ERR_R_MALLOC_FAILURE);
@@ -3593,7 +3592,7 @@ int ssl3_check_cert_and_algorithm(SSL *s)
         return 1;
 
     /* This is the passed certificate */
-    clu = ssl_cert_lookup_by_pkey(X509_get0_pubkey(s->session->peer), &idx);
+    clu = ssl_cert_lookup_by_pkey(X509_extract_pubkey(s->session->peer), &idx);
 
     /* Check certificate is recognised and suitable for cipher */
     if (clu == NULL || (alg_a & clu->amask) == 0) {
