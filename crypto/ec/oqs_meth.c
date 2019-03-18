@@ -24,12 +24,17 @@
    - oqs_artefact: the post-quantum artefact, of length determined by the OQS signature context
 */
 
+/*
+ * We added the a method which combines two keys into one hybrid
+ */
+
 #include <stdio.h>
 #include "internal/cryptlib.h"
 #include <openssl/x509.h>
 #include "internal/asn1_int.h"
 #include "internal/evp_int.h"
 #include <oqs/oqs.h>
+
 
 /* Only supports OQS's master branch signature API for now */
 #if !defined(OQS_NIST_BRANCH)
@@ -468,7 +473,60 @@ static int oqs_pub_decode(EVP_PKEY *pkey, X509_PUBKEY *pubkey)
     oqs_pkey_ctx_free(oqs_key);
     return 0;
 }
+/*
+ * Combine Keys to get a hybrid key
+ */
+int oqs_combine_keys(const EVP_PKEY *classical_key, const EVP_PKEY *oqs_keyp, EVP_PKEY *result){
+    int classical_nid = classical_key->ameth->pkey_id;
+    OQS_KEY *oqs_key = (OQS_KEY*) oqs_keyp->pkey.ptr;
+    int oqs_nid = oqs_key->nid;
+    int hybrid_nid;
+    if(classical_nid == NID_rsaEncryption){
+        switch (oqs_nid)
+        {
+            case NID_picnicL1FS:
+                hybrid_nid = NID_rsa3072_picnicL1FS;
+                break;
+            case NID_qteslaI:
+                hybrid_nid = NID_rsa3072_qteslaI;
+                break;
+                /* ADD_MORE_OQS_SIG_HERE hybrid only */
+            default:
+                return -1;
+        }
+    }else if(classical_nid == NID_secp384r1){
+        switch (oqs_nid)
+        {
+            case NID_qteslaIIIsize:
+                hybrid_nid = NID_p384_qteslaIIIsize;
+                break;
+            case NID_qteslaIIIspeed:
+                hybrid_nid =NID_p384_qteslaIIIspeed;
+                break;
+                /* ADD_MORE_OQS_SIG_HERE hybrid only */
+            default:
+                return -1;
+        }
+    }else if(classical_nid == NID_X9_62_prime256v1){
+        switch (oqs_nid)
+        {
+            case NID_picnicL1FS:
+                hybrid_nid = NID_p256_picnicL1FS;
+                break;
+            case NID_qteslaI:
+                hybrid_nid = NID_p256_qteslaI;
+                break;
+                /* ADD_MORE_OQS_SIG_HERE hybrid only */
+            default:
+                return -1;
+        }
+    }
+    oqs_key->classical_pkey = classical_key;
+    oqs_key->nid = hybrid_nid;
+    EVP_PKEY_assign(result, hybrid_nid, oqs_key);
 
+    return 0;
+}
 static int oqs_pub_cmp(const EVP_PKEY *a, const EVP_PKEY *b)
 {
     const OQS_KEY *akey = (OQS_KEY*) a->pkey.ptr;
@@ -489,6 +547,7 @@ static int oqs_pub_cmp(const EVP_PKEY *a, const EVP_PKEY *b)
     /* compare PQC key */
     return CRYPTO_memcmp(akey->pubkey, bkey->pubkey, akey->s->length_public_key) == 0;
 }
+
 
 static int oqs_priv_decode(EVP_PKEY *pkey, const PKCS8_PRIV_KEY_INFO *p8)
 {
