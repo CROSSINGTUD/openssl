@@ -7,6 +7,8 @@ This branch is a fork of the OQS-OpenSSL\_1\_1\_1-stable branch of the **Open Qu
 
 -  backwards compatible hybrid certificates
 -  combining two keys into one hybrid key
+
+This README continues with a description on how to build the openssl fork followed by an example creating a hybrid certificate chain.
 --------
 
 The **Open Quantum Safe (OQS) project** has the goal of developing and prototyping quantum-resistant cryptography.
@@ -45,7 +47,7 @@ The following signature schemes from liboqs are supported (assuming they have be
 The following hybrid schemes are supported, using either the NIST P-256 curve or 3072-bit RSA for L1 schemes, or the NIST P-384 curve for L3 schemes:
 
 - `p256_picnicL1FS`, `rsa3072_picnicL1FS`
-- `p256_qteslaI`, `rsa3072_qteslaI`, `p384_qteslaIIIsize`, `p384_qteslaIIIspeed` (not currently on Windows)
+- `p256_qteslaI`, `rsa3072_qteslaI`, `p384_qteslaIIIsize`, `p384_qteslaIIIspeed` 
 
 
 Building on Linux 
@@ -129,12 +131,19 @@ The config file from configs/intermediate folder has to be copied to the created
 ### Preparing the config files
 
 Before creating the certificates the config files have to be adapted depending on your folder structure.
+
 First you have to set the dir variable, which determines where the certificates, csr etc are kept. 
-In the root config file set dir = /path-to-root_ca/root_ca
-In the intermediate config file set dir = /path-to-root_ca/root_ca/intermediate
+
+    In the root config file set dir = /path-to-root_ca/root_ca
+    
+    In the intermediate config file set dir = /path-to-root_ca/root_ca/intermediate
+    
 Then you have to set the hybridSig extension. It sets the path to the private key, which is used to create the post-quantum safe signature.
-For the root config set hybridSig=file:path-to-root_ca/root_ca/private/ca.qteslakey.pem in the extension sections.
-For the intermediate config set hybridSig=file:path-to-root_ca/root_ca/intermediate/private/ca.qteslakey.pem in the extension sections.
+
+    For the root config set hybridSig=file:path-to-root_ca/root_ca/private/ca.qteslakey.pem in the extension sections.
+    
+    For the intermediate config set hybridSig=file:path-to-root_ca/root_ca/intermediate/private/ca.qteslakey.pem in the extension sections.
+
 The extension sections can be adapted as in standard openssl according to your needs. For the TLS demo extendedKeyUsage = serverAuth is needed for the server.
 
 
@@ -177,7 +186,7 @@ When creating the CSR we have to specify the path to the post-quantum public key
     
 ### Create the chain file
 
-    `cat intermediate/certs/intermediate.cert.pem certs/ca.cert.pem > intermediate/certs/ca-chain.cert.pem`
+    cat intermediate/certs/intermediate.cert.pem certs/ca.cert.pem > intermediate/certs/ca-chain.cert.pem
     
 ### Create and verify the server certificate
 
