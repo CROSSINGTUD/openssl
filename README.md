@@ -134,15 +134,15 @@ Before creating the certificates the config files have to be adapted depending o
 
 First you have to set the dir variable, which determines where the certificates, csr etc are kept. 
 
-    In the root config file set dir = /path-to-root_ca/root_ca
+    In the root config file set: dir = /path-to-root_ca/root_ca
     
-    In the intermediate config file set dir = /path-to-root_ca/root_ca/intermediate
+    In the intermediate config file set: dir = /path-to-root_ca/root_ca/intermediate
     
 Then you have to set the hybridSig extension. It sets the path to the private key, which is used to create the post-quantum safe signature.
 
-    For the root config set hybridSig=file:path-to-root_ca/root_ca/private/ca.qteslakey.pem in the extension sections.
+    For the root config set: hybridSig=file:path-to-root_ca/root_ca/private/ca.qteslakey.pem in the extension sections.
     
-    For the intermediate config set hybridSig=file:path-to-root_ca/root_ca/intermediate/private/ca.qteslakey.pem in the extension sections.
+    For the intermediate config set: hybridSig=file:path-to-root_ca/root_ca/intermediate/private/ca.qteslakey.pem in the extension sections.
 
 The extension sections can be adapted as in standard openssl according to your needs. For the TLS demo extendedKeyUsage = serverAuth is needed for the server.
 
