@@ -205,7 +205,7 @@ When creating the CSR we have to specify the path to the post-quantum public key
 
 4. Create the certificate for the server as intermediate CA:
 
-    `<path-to-openssl-dir>/apps/openssl ca -config intermediate/openssl.cnf -extensions usr_cert -in intermediate/csr/www.example.com.csr.pem -out intermediate/certs/www.example.com.cert.pem`
+    `<path-to-openssl-dir>/apps/openssl ca -config intermediate/openssl.cnf -extensions server_cert -in intermediate/csr/www.example.com.csr.pem -out intermediate/certs/www.example.com.cert.pem`
     
 5. Verify the server certificate:
 
@@ -218,11 +218,11 @@ OpenSSL contains a basic TLS server (`s_server`) and TLS client (`s_client`) whi
 
 
 
-	apps/openssl s_server -cert intermediate/certs/www.example.com.cert.pem -key -key intermediate/private/www.example.com.rsakey.pem -www -tls1_3
+	<path-to-openssl-dir>/apps/openssl s_server -cert intermediate/certs/www.example.com.cert.pem -key intermediate/private/www.example.com.rsakey.pem -www -tls1_3
 
 In another terminal window, you can run a TLS client requesting one of the supported ciphersuites (`<KEXALG>` = one of the key exchange mechanisms listed above) or the hybrid ciphersuites (`p256-<KEXALG>`, only the NIST p256 curve in combination with L1 PQC KEM schemes are supported for now):
 
-	apps/openssl s_client -curves <KEXALG> -CAfile intermediate/certs/ca-chain.cert.pem  -connect localhost:4433
+	<path-to-openssl-dir>/apps/openssl s_client -curves <KEXALG> -CAfile intermediate/certs/ca-chain.cert.pem  -connect localhost:4433
 
 
 License
