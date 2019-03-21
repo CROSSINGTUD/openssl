@@ -131,6 +131,7 @@ The config file from configs/intermediate folder has to be copied to the created
 ### Preparing the config files
 
 Before creating the certificates the config files have to be adapted depending on your folder structure.
+In our config files the CA simply copys all extensions from the csr. In reality the CA has policies which define how to handle requested extensions.
 
 First you have to set the dir variable, which determines where the certificates, csr etc are kept. 
 
