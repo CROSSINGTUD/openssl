@@ -149,41 +149,41 @@ The extension sections can be adapted as in standard openssl according to your n
 
 
 ### Creating the root certificate
-    cd path-to-root_ca/root_ca
+   	cd path-to-root_ca/root_ca
 1. Create the non-post-quantum safe keypair:
 
-    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout private/ca.rsakey.pem -out public/ca.rsakey.pem -nodes -config openssl.cnf -noout`
+    	<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout private/ca.rsakey.pem -out public/ca.rsakey.pem -nodes -config openssl.cnf -noout
     
 2. Create the post-quantum safe keypair:
 
-    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey qteslaI -pubkey -keyout private/ca.qteslakey.pem -out public/ca.qteslakey.pem -nodes -config openssl.cnf -noout`
+    	<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey qteslaI -pubkey -keyout private/ca.qteslakey.pem -out public/ca.qteslakey.pem -nodes -config openssl.cnf -noout
     
 3. Create the self-signed root certificate:
 
-    `<path-to-openssl-dir>/apps/openssl req -x509 -new -out certs/ca.cert.pem -key private/ca.rsakey.pem -nodes -addext "hybridSig=file:path-to-root_ca/private/ca.qteslakey.pem" -addext "hybridKey=file:path-to-root_ca/public/ca.qteslakey.pem" -extensions v3_ca -config openssl.cnf `
+    	<path-to-openssl-dir>/apps/openssl req -x509 -new -out certs/ca.cert.pem -key private/ca.rsakey.pem -nodes -addext "hybridSig=file:path-to-root_ca/private/ca.qteslakey.pem" -addext "hybridKey=file:path-to-root_ca/public/ca.qteslakey.pem" -extensions v3_ca -config openssl.cnf
 
 ### Create and verify the intermediate CA certificate
 
 1. Create the non-post-quantum safe keypair:
 
-    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout intermediate/private/intermediate.rsakey.pem -out intermediate/public/intermediate.rsakey.pem -nodes -config intermediate/openssl.cnf -noout`
+    	<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout intermediate/private/intermediate.rsakey.pem -out intermediate/public/intermediate.rsakey.pem -nodes -config intermediate/openssl.cnf -noout
     
 2. Create the post-quantum safe keypair:
 
-    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey qteslaI -pubkey -keyout intermediate/private/intermediate.qteslakey.pem -out intermediate/public/intermediate.qteslakey.pem -nodes -config intermediate/openssl.cnf -noout`
+    	<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey qteslaI -pubkey -keyout intermediate/private/intermediate.qteslakey.pem -out intermediate/public/intermediate.qteslakey.pem -nodes -config intermediate/openssl.cnf -noout
     
 3. Creating the CSR for the intermediate CA:
 When creating the CSR we have to specify the path to the post-quantum public key, which will be included as extension.
 
-    `<path-to-openssl-dir>/apps/openssl req -config intermediate/openssl.cnf -new -key intermediate/private/intermediate.rsakey.pem -out intermediate/csr/intermediate.csr.pem -addext "hybridKey=file:path-to-root_ca/root_ca/intermediate/public/intermediate.qteslakey.pem"`
+    	<path-to-openssl-dir>/apps/openssl req -config intermediate/openssl.cnf -new -key intermediate/private/intermediate.rsakey.pem -out intermediate/csr/intermediate.csr.pem -addext "hybridKey=file:path-to-root_ca/root_ca/intermediate/public/intermediate.qteslakey.pem"
 
 4. Create the certificate for the intermediate CA as root CA:
 
-    `<path-to-openssl-dir>/apps/openssl ca -config openssl.cnf -extensions v3_intermediate_ca -in intermediate/csr/intermediate.csr.pem -out intermediate/certs/intermediate.cert.pem`
+    	<path-to-openssl-dir>/apps/openssl ca -config openssl.cnf -extensions v3_intermediate_ca -in intermediate/csr/intermediate.csr.pem -out intermediate/certs/intermediate.cert.pem
     
 5. Verify the intermediate CA certificate:
 
-    `<path-to-openssl-dir>/apps/openssl verify -CAfile certs/ca.cert.pem intermediate/certs/intermediate.cert.pem`
+    	<path-to-openssl-dir>/apps/openssl verify -CAfile certs/ca.cert.pem intermediate/certs/intermediate.cert.pem
     
 ### Create the chain file
 
@@ -193,25 +193,31 @@ When creating the CSR we have to specify the path to the post-quantum public key
 
 1. Create the non-post-quantum safe keypair:
 
-    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout intermediate/private/www.example.com.rsakey.pem -out intermediate/public/www.example.com.rsakey.pem -nodes -config intermediate/openssl.cnf -noout`
+    	<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey rsa:3072 -pubkey -keyout intermediate/private/www.example.com.rsakey.pem -out intermediate/public/www.example.com.rsakey.pem -nodes -config intermediate/openssl.cnf -noout
     
 2. Create the post-quantum safe keypair:
 
-    `<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey qteslaI -pubkey -keyout intermediate/private/www.example.com.qteslakey.pem -out intermediate/public/www.example.com.qteslakey.pem -nodes -config intermediate/openssl.cnf -noout`
+    	<path-to-openssl-dir>/apps/openssl req -x509 -new -newkey qteslaI -pubkey -keyout intermediate/private/www.example.com.qteslakey.pem -out intermediate/public/www.example.com.qteslakey.pem -nodes -config intermediate/openssl.cnf -noout
     
 3. Creating the CSR for the server certificate:
 When creating the CSR we have to specify the path to the post-quantum public key, which will be included as extension.
 
-    `<path-to-openssl-dir>/apps/openssl req -config intermediate/openssl.cnf -new -key intermediate/private/www.example.com.rsakey.pem -out intermediate/csr/www.example.com.csr.pem -addext "hybridKey=file:/home/tobias/crossing/configs/intermediate/public/www.example.com.qteslakey.pem"`
+    	<path-to-openssl-dir>/apps/openssl req -config intermediate/openssl.cnf -new -key intermediate/private/www.example.com.rsakey.pem -out intermediate/csr/www.example.com.csr.pem -addext "hybridKey=file:/home/tobias/crossing/configs/intermediate/public/www.example.com.qteslakey.pem"
 
 4. Create the certificate for the server as intermediate CA:
 
-    `<path-to-openssl-dir>/apps/openssl ca -config intermediate/openssl.cnf -extensions server_cert -in intermediate/csr/www.example.com.csr.pem -out intermediate/certs/www.example.com.cert.pem`
+    	<path-to-openssl-dir>/apps/openssl ca -config intermediate/openssl.cnf -extensions server_cert -in intermediate/csr/www.example.com.csr.pem -out intermediate/certs/www.example.com.cert.pem
     
 5. Verify the server certificate:
 
-    `<path-to-openssl-dir>/apps/openssl verify -CAfile certs/ca.cert.pem -untrusted intermediate/certs/intermediate.cert.pem intermediate/certs/www.example.com.cert.pem`
+		<path-to-openssl-dir>/apps/openssl verify -CAfile certs/ca.cert.pem -untrusted intermediate/certs/intermediate.cert.pem intermediate/certs/www.example.com.cert.pem
     
+
+### Combining Keys
+
+In order to use hybrid authentication in the TLS demo, we have to create a concatenated key from the post-quantum-safe key and the classical (e.g. rsa) key. 
+
+	<path-to-openssl-dir>/apps/openssl combine -pqkey intermediate/private/www.example.com.qteslakey.pem -classkey intermediate/private/www.example.com.rsakey.pem  -keyout intermediate/private/www.example.com.combine.pem -outform pem
 
 ### TLS demo
 
@@ -219,7 +225,7 @@ OpenSSL contains a basic TLS server (`s_server`) and TLS client (`s_client`) whi
 
 
 
-	<path-to-openssl-dir>/apps/openssl s_server -cert intermediate/certs/www.example.com.cert.pem -key intermediate/private/www.example.com.rsakey.pem -www -tls1_3
+	<path-to-openssl-dir>/apps/openssl s_server -cert intermediate/certs/www.example.com.cert.pem -key intermediate/private/www.example.com.combine.pem -www -tls1_3
 
 In another terminal window, you can run a TLS client requesting one of the supported ciphersuites (`<KEXALG>` = one of the key exchange mechanisms listed above) or the hybrid ciphersuites (`p256-<KEXALG>`, only the NIST p256 curve in combination with L1 PQC KEM schemes are supported for now):
 
