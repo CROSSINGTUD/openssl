@@ -1944,7 +1944,7 @@ MSG_PROCESS_RETURN tls_process_server_certificate(SSL *s, PACKET *pkt)
      */
     x = sk_X509_value(sk, 0);
     sk = NULL;
-    pkey = X509_get0_pubkey(x);
+    pkey = X509_extract_pubkey(x);
 
     if (pkey == NULL || EVP_PKEY_missing_parameters(pkey)) {
         x = NULL;

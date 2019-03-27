@@ -295,7 +295,7 @@ int X509_check_private_key(const X509 *x, const EVP_PKEY *k)
     const EVP_PKEY *xk;
     int ret;
 
-    xk = X509_get0_pubkey(x);
+    xk = X509_extract_pubkey(x);
 
     if (xk)
         ret = EVP_PKEY_cmp(xk, k);

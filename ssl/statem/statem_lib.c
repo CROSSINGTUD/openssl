@@ -357,7 +357,7 @@ MSG_PROCESS_RETURN tls_process_cert_verify(SSL *s, PACKET *pkt)
     }
 
     peer = s->session->peer;
-    pkey = X509_get0_pubkey(peer);
+    pkey = X509_extract_pubkey(peer);
     if (pkey == NULL) {
         SSLfatal(s, SSL_AD_INTERNAL_ERROR, SSL_F_TLS_PROCESS_CERT_VERIFY,
                  ERR_R_INTERNAL_ERROR);

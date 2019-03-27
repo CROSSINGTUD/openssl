@@ -136,7 +136,7 @@ static int ssl_set_pkey(CERT *c, EVP_PKEY *pkey)
 
     if (c->pkeys[i].x509 != NULL) {
         EVP_PKEY *pktmp;
-        pktmp = X509_get0_pubkey(c->pkeys[i].x509);
+        pktmp = X509_extract_pubkey(c->pkeys[i].x509);
         if (pktmp == NULL) {
             SSLerr(SSL_F_SSL_SET_PKEY, ERR_R_MALLOC_FAILURE);
             return 0;
@@ -318,7 +318,7 @@ static int ssl_set_cert(CERT *c, X509 *x)
     EVP_PKEY *pkey;
     size_t i;
 
-    pkey = X509_get0_pubkey(x);
+    pkey = X509_extract_pubkey(x);
     if (pkey == NULL) {
         SSLerr(SSL_F_SSL_SET_CERT, SSL_R_X509_LIB);
         return 0;
