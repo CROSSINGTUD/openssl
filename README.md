@@ -244,3 +244,4 @@ Contributors to this fork of the open-quantum-safe/openssl branch OQS-OpenSSL\_1
 
 - Luca Gladiator (TU Darmstadt)
 - Tobias Stöckert (TU Darmstadt)
+- Johannes Wirth (TU Darmstadt)
